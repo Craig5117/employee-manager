@@ -3,6 +3,7 @@ const cTable = require("console.table");
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
 const validation = require('./utils/Validation')
+const db = require('./utils/Database')
 const logo = `
 ███████╗███╗   ███╗██████╗ ██╗      ██████╗ ██╗   ██╗███████╗███████╗    
 ██╔════╝████╗ ████║██╔══██╗██║     ██╔═══██╗╚██╗ ██╔╝██╔════╝██╔════╝    
@@ -49,12 +50,28 @@ const getAll = (keyWord) => {
                 LEFT JOIN Employees m ON m.id = Employees.manager_id`;
   }
 
-  const query = connection.query(qryStmt, function (err, res) {
-    if (err) throw err;
-    console.table(keyWord, res);
-    quitReturn();
-  });
+
+  connection.promise().query(`SELECT * FROM Employees`)
+          .then( ([rows, fields]) => {
+              console.table('Employees', rows);
+          })
+          .catch(console.log)
+          .then( () => quitReturn());
+//   const query = connection.query(qryStmt, function (err, res) {
+//     if (err) throw err;
+//     console.table(keyWord, res);
+//     quitReturn();
+//   });
 };
+
+// const getAllEmployees = () => {
+//     connection.promise().query(`SELECT * FROM Employees`)
+//         .then( ([rows, fields]) => {
+//             console.table('Employees', rows);
+//         })
+//         .catch(console.log)
+//         .then( () => connection.end());
+// }
 
 const addDept = (deptName) => {
   let qryStmt = `INSERT INTO Departments SET ?`;
@@ -204,14 +221,7 @@ const quitReturn = () => {
     });
 };
 
-// const getAllEmployees = () => {
-//     connection.promise().query(`SELECT * FROM Employees`)
-//         .then( ([rows, fields]) => {
-//             console.table('Employees', rows);
-//         })
-//         .catch(console.log)
-//         .then(quitReturn());
-// }
+
 
 // con.promise().query("SELECT 1")
 //   .then( ([rows,fields]) => {
