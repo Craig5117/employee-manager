@@ -47,6 +47,21 @@ const getAll = (keyWord) => {
             quitReturn();
         }
     );
+};
+
+const addDept = (deptName) => {
+    let qryStmt = `INSERT INTO Departments SET ?`;
+                    
+    const query = connection.query(qryStmt,
+        {
+            dept_name: deptName
+        },
+        function(err, res) {
+            if (err) throw err;
+            console.log(res.affectedRows + ' department added!\n');
+            quitReturn();
+        }
+    );
 }
 
 function mainMenu() {
@@ -57,7 +72,7 @@ function mainMenu() {
               type: "list",
               name: "choice",
               message: "What would you like to do?",
-              choices: ["View All Departments", "View All Roles", "View All Employees", "Quit"],
+              choices: ["View All Departments", "View All Roles", "View All Employees", "Add a Department", "Quit"],
             },
         ]
     ).then((mainSelect) => {
@@ -67,6 +82,31 @@ function mainMenu() {
             case "Quit":
                 quit();
                 break;
+            case "Add a Department":
+                inquirer.prompt(
+                    [
+                        {
+                            type: "input",
+                            name: "deptName",
+                            message: `What is the department name? (Required)`,
+                            validate: deptName => {
+                                if (deptName) {
+                                    return true;
+                                }
+                                else {
+                                console.log(`
+***** You must enter a department name. *****`);
+                                return false;
+                                }
+                            }
+                        }
+                    ]
+                )
+                .then((input) => {
+                    addDept(input.deptName);
+                });
+                break;
+                
             default:
                 getAll(keyWord);
                 break;
