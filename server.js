@@ -33,11 +33,16 @@ connection.connect(err => {
     mainMenu();
 });
 
+const getAllEmployees = () => {
+    const query = connection.query(`SELECT * FROM Employees`,
+        function(err, res) {
+            if (err) throw err;
+            console.table('Employees', res);
+            quitReturn();
+        }
+    );
+};
 
-
-const quit = () => {
-    connection.end();
-}
 
 function mainMenu() {
     console.log(logo);
@@ -47,7 +52,7 @@ function mainMenu() {
               type: "list",
               name: "choice",
               message: "What would you like to do?",
-              choices: ["View All Employees", "Quit"],
+              choices: ["View All Departments", "View All Employees", "Quit"],
             },
         ]
     ).then((mainSelect) => {
@@ -61,6 +66,10 @@ function mainMenu() {
         }
     }) 
 };
+
+const quit = () => {
+    connection.end();
+}
 
 const quitReturn = () => {
     inquirer.prompt(
@@ -84,15 +93,6 @@ const quitReturn = () => {
     }) 
 }
 
-const getAllEmployees = () => {
-    const query = connection.query(`SELECT * FROM Employees`,
-        function(err, res) {
-            if (err) throw err;
-            console.table('Employees', res);
-            quitReturn();
-        }
-    );
-};
 
 // const getAllEmployees = () => {
 //     connection.promise().query(`SELECT * FROM Employees`)
