@@ -33,16 +33,21 @@ connection.connect(err => {
     mainMenu();
 });
 
-const getAllEmployees = () => {
-    const query = connection.query(`SELECT * FROM Employees`,
+
+const getAll = (keyWord) => {
+    let qryStmt = `SELECT * FROM ${keyWord}`;
+        if (keyWord === 'Employees') {
+            qryStmt = `SELECT Employees.id, Employees.first_name, Employees.last_name, Roles.title, Departments.dept_name AS department, Roles.salary FROM Employees INNER JOIN Roles ON Employees.role_id = Roles.id LEFT JOIN Departments ON Roles.dept_id = Departments.id`;
+        } 
+
+    const query = connection.query(qryStmt,
         function(err, res) {
             if (err) throw err;
-            console.table('Employees', res);
+            console.table(keyWord, res);
             quitReturn();
         }
     );
-};
-
+}
 
 function mainMenu() {
     console.log(logo);
@@ -52,16 +57,18 @@ function mainMenu() {
               type: "list",
               name: "choice",
               message: "What would you like to do?",
-              choices: ["View All Departments", "View All Employees", "Quit"],
+              choices: ["View All Departments", "View All Roles", "View All Employees", "Quit"],
             },
         ]
     ).then((mainSelect) => {
+        let statementArr = mainSelect.choice.split(' ');
+        let keyWord = statementArr[2];
         switch (mainSelect.choice) {
-            case "View All Employees":
-                getAllEmployees();
-                break;
             case "Quit":
                 quit();
+                break;
+            default:
+                getAll(keyWord);
                 break;
         }
     }) 
