@@ -2,23 +2,38 @@ const dotenv = require("dotenv").config();
 const cTable = require("console.table");
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
-const validation = require('./utils/Validation')
 const db = require('./utils/Database')
-const logo = `
-███████╗███╗   ███╗██████╗ ██╗      ██████╗ ██╗   ██╗███████╗███████╗    
-██╔════╝████╗ ████║██╔══██╗██║     ██╔═══██╗╚██╗ ██╔╝██╔════╝██╔════╝    
-█████╗  ██╔████╔██║██████╔╝██║     ██║   ██║ ╚████╔╝ █████╗  █████╗      
-██╔══╝  ██║╚██╔╝██║██╔═══╝ ██║     ██║   ██║  ╚██╔╝  ██╔══╝  ██╔══╝      
-███████╗██║ ╚═╝ ██║██║     ███████╗╚██████╔╝   ██║   ███████╗███████╗    
-╚══════╝╚═╝     ╚═╝╚═╝     ╚══════╝ ╚═════╝    ╚═╝   ╚══════╝╚══════╝    
-                                                                         
-███╗   ███╗ █████╗ ███╗   ██╗ █████╗  ██████╗ ███████╗██████╗            
-████╗ ████║██╔══██╗████╗  ██║██╔══██╗██╔════╝ ██╔════╝██╔══██╗           
-██╔████╔██║███████║██╔██╗ ██║███████║██║  ███╗█████╗  ██████╔╝           
-██║╚██╔╝██║██╔══██║██║╚██╗██║██╔══██║██║   ██║██╔══╝  ██╔══██╗           
-██║ ╚═╝ ██║██║  ██║██║ ╚████║██║  ██║╚██████╔╝███████╗██║  ██║           
-╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝           
-`;
+const menu = require('./utils/Menu')
+
+const start = function() {
+    menu.mainMenu()
+    .then((mainSelect) => {
+        let statementArr = mainSelect.choice.split(" ");
+        let keyWord = statementArr[2];
+        switch (mainSelect.choice) {
+        case "Quit":
+            quit();
+            break;
+        case "Add a Department":
+            menu.deptPrompt()
+            .then((input) => {
+                addDept(input.deptName);
+            });
+            break;
+            case "Add a Role":
+            menu.rolePrompt()
+                .then((input) => {
+                addRole(input.roleTitle, input.roleSalary, input.roleDept);
+            });
+            break;
+
+        default:
+            getAll(keyWord);
+            break;
+        }
+    
+    });
+}
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -31,8 +46,9 @@ const connection = mysql.createConnection({
 connection.connect((err) => {
   if (err) throw err;
   console.log("connected as id " + connection.threadId + "\n");
-  mainMenu();
+    start();
 });
+
 
 const getAll = (keyWord) => {
   let qryStmt = `SELECT * FROM ${keyWord}`;
@@ -107,94 +123,6 @@ const addRole = (roleTitle, roleSalary, roleDept) => {
     );
 };
 
-function mainMenu() {
-  console.log(logo);
-  inquirer
-    .prompt([
-      {
-        type: "list",
-        name: "choice",
-        message: "What would you like to do?",
-        choices: [
-          "View All Departments",
-          "View All Roles",
-          "View All Employees",
-          "Add a Department",
-          "Add a Role",
-          "Quit",
-        ],
-      },
-    ])
-    .then((mainSelect) => {
-      let statementArr = mainSelect.choice.split(" ");
-      let keyWord = statementArr[2];
-      switch (mainSelect.choice) {
-        case "Quit":
-          quit();
-          break;
-        case "Add a Department":
-          inquirer
-            .prompt([
-              {
-                type: "input",
-                name: "deptName",
-                message: `What is the department name? (Required)`,
-                validate: (deptName) => {
-                  if (deptName) {
-                    return true;
-                  } else {
-                    console.log(`\n***** You must enter a department name. *****`);
-                    return false;
-                  }
-                },
-              },
-            ])
-            .then((input) => {
-              addDept(input.deptName);
-            });
-          break;
-          case "Add a Role":
-            inquirer
-              .prompt([
-                {
-                  type: "input",
-                  name: "roleTitle",
-                  message: `What is the role name? (Required)`,
-                  validate: (roleTitle) => {
-                    if (roleTitle) {
-                      return true;
-                    } else {
-                      console.log(`\n***** You must enter a role name. *****`);
-                      return false;
-                    }
-                  },
-                },
-                {
-                  type: "number",
-                  name: "roleSalary",
-                  message: `What is the salary for this role? (Required)`,
-                  ...validation.reqNumberInputValidation
-                },
-                {
-                    type: "number",
-                    name: "roleDept",
-                    message: "What is the deptartment id for this role?",
-                    ...validation.optNumberInputValidation
-                }
-
-              ])
-              .then((input) => {
-                addRole(input.roleTitle, input.roleSalary, input.roleDept);
-            });
-            break;
-
-        default:
-          getAll(keyWord);
-          break;
-      }
-    });
-}
-
 const quit = () => {
   connection.end();
 };
@@ -212,7 +140,7 @@ const quitReturn = () => {
     .then((returnSelect) => {
       switch (returnSelect.choice) {
         case "Main Menu":
-          mainMenu();
+          start();
           break;
         case "Quit":
           quit();
