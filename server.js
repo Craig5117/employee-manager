@@ -2,9 +2,57 @@ const dotenv = require("dotenv").config();
 const cTable = require("console.table");
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
-// const db = require('./utils/Database')
+const db = require('./utils/Database')
 const menu = require('./utils/Menu')
 
+// async function start (){
+//     try {
+//        let mainSelect = await menu.mainMenu;
+//        await menuSwitch (mainSelect) {
+//         let statementArr = mainSelect.choice.split(" ");
+//         let keyWord = statementArr[2];
+//         switch (mainSelect.choice) {
+//         case "Quit":
+//              await db.quit();
+//             break;
+//         case "Add a Department":
+//             const input = await menu.deptPrompt();
+//             const res = await db.addDept(input.deptName)
+//             await console.log(res[0].affectedRows + " department added!\n");
+//             await returnSwitch();
+//                 }).catch(function(e) {
+//                     console.error(e.message)
+//                     returnSwitch();
+//                 });
+//             });
+//             break;
+//         case "Add a Role":
+//             menu.rolePrompt()
+//             .then((input) => {
+//                 db.addRole(input.roleTitle, input.roleSalary, input.roleDept)
+//                 .then( (res) => {
+//                     console.log(res[0].affectedRows + " role added!\n");
+//                     returnSwitch();
+//                 }).catch(function(e) {
+//                     console.error(e.message)
+//                     returnSwitch();
+//                 });
+//             });
+//             break;
+//         default:
+//             db.getAll(keyWord)
+//             .then( () => returnSwitch())
+//             .catch(function(e) {
+//                 console.error(e.message)
+//                 returnSwitch();
+//             });
+//             break;
+//         }
+
+//     }    
+//     }
+//     catch {}
+// }
 const start = function() {
     menu.mainMenu()
     .then((mainSelect) => {
@@ -12,117 +60,46 @@ const start = function() {
         let keyWord = statementArr[2];
         switch (mainSelect.choice) {
         case "Quit":
-            quit();
+            db.quit();
             break;
         case "Add a Department":
             menu.deptPrompt()
             .then((input) => {
-                addDept(input.deptName).then( (res) => {
+                db.addDept(input.deptName)
+                .then( (res) => {
                     console.log(res[0].affectedRows + " department added!\n");
+                    returnSwitch();
+                }).catch(function(e) {
+                    console.error(e.message)
                     returnSwitch();
                 });
             });
             break;
         case "Add a Role":
             menu.rolePrompt()
-                .then((input) => {
-                addRole(input.roleTitle, input.roleSalary, input.roleDept);
+            .then((input) => {
+                db.addRole(input.roleTitle, input.roleSalary, input.roleDept)
+                .then( (res) => {
+                    console.log(res[0].affectedRows + " role added!\n");
+                    returnSwitch();
+                }).catch(function(e) {
+                    console.error(e.message)
+                    returnSwitch();
+                });
             });
             break;
         default:
-            getAll(keyWord).then( () => returnSwitch());
+            db.getAll(keyWord)
+            .then( () => returnSwitch())
+            .catch(function(e) {
+                console.error(e.message)
+                returnSwitch();
+            });
             break;
         }
     
     });
 }
-
-const connection = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: process.env.user,
-  password: process.env.pass,
-  database: "employees_db",
-});
-
-connection.connect((err) => {
-  if (err) throw err;
-  console.log("connected as id " + connection.threadId + "\n");
-    start();
-});
-
-
-const getAll = (keyWord) => {
-  let qryStmt = `SELECT * FROM ${keyWord}`;
-  if (keyWord === "Employees") {
-    qryStmt = `SELECT Employees.id, 
-                    Employees.first_name, 
-                    Employees.last_name, 
-                    Roles.title, 
-                    Departments.dept_name AS department, 
-                    Roles.salary, 
-                    CONCAT(m.first_name, ' ', m.last_name) AS manager 
-                FROM Employees 
-                INNER JOIN Roles ON Employees.role_id = Roles.id 
-                LEFT JOIN Departments ON Roles.dept_id = Departments.id
-                LEFT JOIN Employees m ON m.id = Employees.manager_id`;
-  }
-
-
- return connection.promise().query(qryStmt)
-          .then( ([rows, fields]) => {
-              console.table(keyWord, rows);
-          })
-          .catch(console.log)
-};
-
-// const getAllEmployees = () => {
-//     connection.promise().query(`SELECT * FROM Employees`)
-//         .then( ([rows, fields]) => {
-//             console.table('Employees', rows);
-//         })
-//         .catch(console.log)
-//         .then( () => connection.end());
-// }
-
-const addDept = (deptName) => {
-  let qryStmt = `INSERT INTO Departments SET ?`;
-
-  return connection.promise().query(
-            qryStmt,
-            {
-            dept_name: deptName,
-            },
-            function (err, res) {
-                if (err) throw err; 
-            }
-        )
-        .catch(console.log)
-  
-};
-
-
-const addRole = (roleTitle, roleSalary, roleDept) => {
-    let qryStmt = `INSERT INTO Roles SET ?`;
-
-    const query = connection.query(
-        qryStmt,
-        {
-            title: roleTitle, 
-            salary: roleSalary, 
-            dept_id: roleDept,
-        },
-        function (err, res) {
-            if (err) throw err;
-            console.log(res.affectedRows + " role added!\n");
-            returnSwitch();
-        }
-    );
-};
-
-const quit = () => {
-  connection.end();
-};
 
 const returnSwitch = () => {
   menu.quitReturn()
@@ -132,17 +109,22 @@ const returnSwitch = () => {
           start();
           break;
         case "Quit":
-          quit();
+          db.quit();
           break;
       }
     });
 };
 
 
+(async function main() {
+    try {
+        await db.initiateConnection();
+        await start();      
+    } catch (error) {
+       if (error) console.log(error) 
+    }
+})();
 
-// con.promise().query("SELECT 1")
-//   .then( ([rows,fields]) => {
-//     console.log(rows);
-//   })
-//   .catch(console.log)
-//   .then( () => con.end());
+
+    
+

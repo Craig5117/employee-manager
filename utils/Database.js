@@ -39,13 +39,19 @@ const connection = mysql.createConnection({
     database: "employees_db",
   });
   
-  connection.connect((err) => {
-    if (err) throw err;
-    console.log("connected as id " + connection.threadId + "\n");
-      start();
-  });
+  const initiateConnection = function () {
 
-const getAll = (keyWord) => {
+
+    connection.promise().connect((err) => {
+      if (err) throw err;
+      console.log("connected as id " + connection.threadId + "\n");
+        
+    });
+    
+    }
+  
+  
+  const getAll = (keyWord) => {
     let qryStmt = `SELECT * FROM ${keyWord}`;
     if (keyWord === "Employees") {
       qryStmt = `SELECT Employees.id, 
@@ -66,7 +72,42 @@ const getAll = (keyWord) => {
             .then( ([rows, fields]) => {
                 console.table(keyWord, rows);
             })
-            .catch(console.log)
-}
+  };
+  
+  const addDept = (deptName) => {
+    let qryStmt = `INSERT INTO Departments SET ?`;
+  
+    return connection.promise().query(
+              qryStmt,
+              {
+              dept_name: deptName,
+              },
+              function (err, res) {
+                  if (err) throw err; 
+              }
+          )
+  };
+  
+  
+  const addRole = (roleTitle, roleSalary, roleDept) => {
+      let qryStmt = `INSERT INTO Roles SET ?`;
+  
+      return connection.promise().query(
+          qryStmt,
+          {
+              title: roleTitle, 
+              salary: roleSalary, 
+              dept_id: roleDept,
+          },
+          function (err, res) {
+              if (err) throw err; 
+          }
+      )
+        
+  };
+  
+  const quit = () => {
+    connection.end();
+  };
 
-module.exports = {getAll}
+module.exports = {initiateConnection, getAll, addDept, addRole, quit}
