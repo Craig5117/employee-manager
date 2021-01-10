@@ -71,8 +71,6 @@ const connection = mysql.createConnection({
    return connection.promise().query(qryStmt)
             .then( ([rows, fields]) => {
                 console.table(keyWord, rows);
-                let match = rows.filter( TextRow => TextRow['dept_name'] === 'Finance' )
-                console.log(match[0].id);
             })
   };
   
