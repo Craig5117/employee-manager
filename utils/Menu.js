@@ -30,6 +30,7 @@ return inquirer
           "View All Employees",
           "Add a Department",
           "Add a Role",
+          "Potential Managers",
           "Quit",
         ],
       },

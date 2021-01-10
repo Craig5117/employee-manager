@@ -88,6 +88,8 @@ const start = function() {
                 });
             });
             break;
+        case "Potential Managers":
+            db.getNamesId(keyWord).then((list) => {console.log(list)});
         default:
             db.getAll(keyWord)
             .then( () => returnSwitch())

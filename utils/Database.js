@@ -71,6 +71,8 @@ const connection = mysql.createConnection({
    return connection.promise().query(qryStmt)
             .then( ([rows, fields]) => {
                 console.table(keyWord, rows);
+                let match = rows.filter( TextRow => TextRow['dept_name'] === 'Finance' )
+                console.log(match[0].id);
             })
   };
   
@@ -105,9 +107,51 @@ const connection = mysql.createConnection({
       )
         
   };
+
+  const getNamesId = (keyWord) => {
+      let employeeNames = [];
+      let employeeIds = [];
+      let managerList = [];
+      let qryStmt = `SELECT 
+                        CONCAT(first_name, ' ', last_name) AS name, 
+                        id 
+                    FROM Employees`;
+                    
+        return connection.promise().query(qryStmt)
+            .then( ([rows, fields]) => {
+                for (let i =0; i < rows.length; ++i) {
+                    managerList = [...managerList, `${rows[i].id}: ${rows[i].name}`]
+                   employeeNames = [...employeeNames, rows[i].name] 
+                   employeeIds = [...employeeIds, rows[i].id] 
+                }
+                // let newArr = rows.filter( TextRow['dept_name'] )
+                // return list = { employeeNames, employeeIds };
+                return managerList;
+                // let match = rows.filter( TextRow => TextRow['dept_name'] === 'Finance' )
+                // console.log(match[0].id);
+            })
+
+  }
+
+  const addEmployee = (first_name, last_name, role_id, manager_id) => {
+    let qryStmt = `INSERT INTO Employees SET ?`;
+  
+    return connection.promise().query(
+        qryStmt,
+        {
+            title: roleTitle, 
+            salary: roleSalary, 
+            dept_id: roleDept,
+        },
+        function (err, res) {
+            if (err) throw err; 
+        }
+    )
+      
+  }
   
   const quit = () => {
     connection.end();
   };
 
-module.exports = {initiateConnection, getAll, addDept, addRole, quit}
+module.exports = {initiateConnection, getAll, addDept, addRole, getNamesId, quit}
