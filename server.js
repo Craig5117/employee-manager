@@ -2,7 +2,7 @@ const dotenv = require("dotenv").config();
 const cTable = require("console.table");
 const inquirer = require("inquirer");
 const mysql = require("mysql2");
-const db = require('./utils/Database')
+// const db = require('./utils/Database')
 const menu = require('./utils/Menu')
 
 const start = function() {
@@ -17,18 +17,20 @@ const start = function() {
         case "Add a Department":
             menu.deptPrompt()
             .then((input) => {
-                addDept(input.deptName);
+                addDept(input.deptName).then( (res) => {
+                    console.log(res[0].affectedRows + " department added!\n");
+                    returnSwitch();
+                });
             });
             break;
-            case "Add a Role":
+        case "Add a Role":
             menu.rolePrompt()
                 .then((input) => {
                 addRole(input.roleTitle, input.roleSalary, input.roleDept);
             });
             break;
-
         default:
-            getAll(keyWord);
+            getAll(keyWord).then( () => returnSwitch());
             break;
         }
     
@@ -67,17 +69,11 @@ const getAll = (keyWord) => {
   }
 
 
-  connection.promise().query(`SELECT * FROM Employees`)
+ return connection.promise().query(qryStmt)
           .then( ([rows, fields]) => {
-              console.table('Employees', rows);
+              console.table(keyWord, rows);
           })
           .catch(console.log)
-          .then( () => quitReturn());
-//   const query = connection.query(qryStmt, function (err, res) {
-//     if (err) throw err;
-//     console.table(keyWord, res);
-//     quitReturn();
-//   });
 };
 
 // const getAllEmployees = () => {
@@ -92,18 +88,19 @@ const getAll = (keyWord) => {
 const addDept = (deptName) => {
   let qryStmt = `INSERT INTO Departments SET ?`;
 
-  const query = connection.query(
-    qryStmt,
-    {
-      dept_name: deptName,
-    },
-    function (err, res) {
-      if (err) throw err;
-      console.log(res.affectedRows + " department added!\n");
-      quitReturn();
-    }
-  );
+  return connection.promise().query(
+            qryStmt,
+            {
+            dept_name: deptName,
+            },
+            function (err, res) {
+                if (err) throw err; 
+            }
+        )
+        .catch(console.log)
+  
 };
+
 
 const addRole = (roleTitle, roleSalary, roleDept) => {
     let qryStmt = `INSERT INTO Roles SET ?`;
@@ -118,7 +115,7 @@ const addRole = (roleTitle, roleSalary, roleDept) => {
         function (err, res) {
             if (err) throw err;
             console.log(res.affectedRows + " role added!\n");
-            quitReturn();
+            returnSwitch();
         }
     );
 };
@@ -127,16 +124,8 @@ const quit = () => {
   connection.end();
 };
 
-const quitReturn = () => {
-  inquirer
-    .prompt([
-      {
-        type: "list",
-        name: "choice",
-        message: "What would you like to do?",
-        choices: ["Main Menu", "Quit"],
-      },
-    ])
+const returnSwitch = () => {
+  menu.quitReturn()
     .then((returnSelect) => {
       switch (returnSelect.choice) {
         case "Main Menu":
