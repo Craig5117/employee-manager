@@ -30,7 +30,7 @@ return inquirer
           "View All Employees",
           "Add a Department",
           "Add a Role",
-          "Potential Managers",
+          "Add an Employee",
           "Quit",
         ],
       },
@@ -88,6 +88,66 @@ function rolePrompt () {
     ]);
 };
 
+function empNamePrompt (order) {
+  return inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "name",
+        message: `What is the employee's ${order} name?`
+      }
+    ]).then(input => {
+      return input.name
+    });
+}
+
+function empRolePrompt (rolesList) {
+    const roleChoices = rolesList.roleTitles;
+    const answerKey = rolesList.rows;
+    return inquirer 
+      .prompt([
+        {
+          type: "list",
+          name: "roleChoice",
+          message: "What is the employee's role?",
+          choices: [...roleChoices, "none"]
+        }
+      ]).then(choice => {
+            if (choice.roleChoice === "none") {
+              return choice.roleChoice = null;
+            } 
+            else {
+            const match = answerKey.filter( TextRow => TextRow['title'] === choice.roleChoice )
+            return match[0].id;
+            }
+         
+       
+      })
+}
+
+function empMngrPrompt (empList) {
+    const mngrChoices = empList.employeeNames;
+    const answerKey = empList.rows;
+    return inquirer 
+      .prompt([
+        {
+          type: "list",
+          name: "mngrChoice",
+          message: "Who is the employee's manager?",
+          choices: [...mngrChoices, "none"]
+        }
+      ]).then(choice => {
+        if (choice.mngrChoice === "none") {
+          return choice.mngrChoice = null;
+        } 
+        else {
+            const match = answerKey.filter( TextRow => TextRow['name'] === choice.mngrChoice )
+            return match[0].id;
+        }
+          
+      })
+}
+
 function quitReturn () {
  return inquirer
     .prompt([
@@ -100,4 +160,4 @@ function quitReturn () {
     ]);
 };
 
-module.exports = {mainMenu, deptPrompt, rolePrompt, quitReturn}
+module.exports = {mainMenu, deptPrompt, rolePrompt, empNamePrompt, empRolePrompt, empMngrPrompt, quitReturn}

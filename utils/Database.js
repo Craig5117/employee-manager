@@ -62,7 +62,7 @@ const connection = mysql.createConnection({
                       Roles.salary, 
                       CONCAT(m.first_name, ' ', m.last_name) AS manager 
                   FROM Employees 
-                  INNER JOIN Roles ON Employees.role_id = Roles.id 
+                  LEFT JOIN Roles ON Employees.role_id = Roles.id 
                   LEFT JOIN Departments ON Roles.dept_id = Departments.id
                   LEFT JOIN Employees m ON m.id = Employees.manager_id`;
     }
@@ -108,10 +108,8 @@ const connection = mysql.createConnection({
         
   };
 
-  const getNamesId = (keyWord) => {
+  const getNamesId = () => {
       let employeeNames = [];
-      let employeeIds = [];
-      let managerList = [];
       let qryStmt = `SELECT 
                         CONCAT(first_name, ' ', last_name) AS name, 
                         id 
@@ -120,28 +118,58 @@ const connection = mysql.createConnection({
         return connection.promise().query(qryStmt)
             .then( ([rows, fields]) => {
                 for (let i =0; i < rows.length; ++i) {
-                    managerList = [...managerList, `${rows[i].id}: ${rows[i].name}`]
                    employeeNames = [...employeeNames, rows[i].name] 
-                   employeeIds = [...employeeIds, rows[i].id] 
                 }
-                // let newArr = rows.filter( TextRow['dept_name'] )
-                // return list = { employeeNames, employeeIds };
-                return managerList;
-                // let match = rows.filter( TextRow => TextRow['dept_name'] === 'Finance' )
-                // console.log(match[0].id);
+                return empList = { employeeNames, rows };              
             })
-
   }
 
-  const addEmployee = (first_name, last_name, role_id, manager_id) => {
+  const getRolesId = () => {
+      let roleTitles = [];
+      let qryStmt = `SELECT 
+                        title, 
+                        id 
+                    FROM roles`;
+
+        return connection.promise().query(qryStmt)
+            .then( ([rows, fields]) => {
+                for (let i =0; i < rows.length; ++i) {
+                    roleTitles = [...roleTitles, rows[i].title] 
+                }
+                return rolesList = { roleTitles, rows };  
+            })    
+  }
+
+  async function getMngrRoleId() {
+      try{
+        const empList = await getNamesId();
+        const rolesList = await getRolesId();
+        return await new Promise ((resolve, reject) => {
+           let empChoices = { empList, rolesList };
+           if (empChoices) {
+               resolve(empChoices);
+           }
+           else {
+               reject();
+           }
+       })  
+      } 
+      catch (error) {
+        if (error) console.log(error)
+      }
+       
+  }
+
+  const addEmployee = (firstName, lastName, roleId, managerId) => {
     let qryStmt = `INSERT INTO Employees SET ?`;
   
     return connection.promise().query(
         qryStmt,
         {
-            title: roleTitle, 
-            salary: roleSalary, 
-            dept_id: roleDept,
+            first_name: firstName, 
+            last_name: lastName, 
+            role_id: roleId,
+            manager_id: managerId
         },
         function (err, res) {
             if (err) throw err; 
@@ -154,4 +182,4 @@ const connection = mysql.createConnection({
     connection.end();
   };
 
-module.exports = {initiateConnection, getAll, addDept, addRole, getNamesId, quit}
+module.exports = {initiateConnection, getAll, addDept, addRole, getNamesId, getRolesId, getMngrRoleId, addEmployee, quit}

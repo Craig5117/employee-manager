@@ -88,8 +88,32 @@ const start = function() {
                 });
             });
             break;
-        case "Potential Managers":
-            db.getNamesId(keyWord).then((list) => {console.log(list)});
+        case "Add an Employee":
+            db.getMngrRoleId().then((empChoices) => {
+                // console.log ("EmpChoices\n", empChoices)
+                (async function buildEmp () {
+                    try{
+                        const firstName = await menu.empNamePrompt('first');
+                        const lastName = await menu.empNamePrompt('last');
+                        const roleId = await menu.empRolePrompt(empChoices.rolesList);
+                        const managerId = await menu.empMngrPrompt(empChoices.empList);
+                        await db.addEmployee(firstName, lastName, roleId, managerId);
+                        await console.log('Employee added.');
+                        await  returnSwitch();                  
+
+                    }
+                    catch (error) {
+                        if (error) console.log(error)
+                    }
+                })();               
+                
+               
+            // let choice = 'Accountant';
+            //  let match = empChoices.rolesList.rows.filter( TextRow => TextRow['title'] === choice )
+            // console.log(match[0].id);
+            // console.log(empChoices);
+            });
+            break;
         default:
             db.getAll(keyWord)
             .then( () => returnSwitch())
