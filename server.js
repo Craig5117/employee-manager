@@ -46,8 +46,13 @@ const start = function () {
               const firstName = await menu.empNamePrompt("first");
               const lastName = await menu.empNamePrompt("last");
               const roleId = await menu.empRolePrompt(empChoices.rolesList);
-              const managerId = await menu.empMngrPrompt(empChoices.empList);
-              await db.addEmployee(firstName, lastName, roleId, managerId);
+              const managerInfo = await menu.empMngrPrompt(empChoices.empList);
+              await db.addEmployee(
+                firstName,
+                lastName,
+                roleId,
+                managerInfo.mngrId
+              );
               await console.log("Employee added.");
               await returnSwitch();
             } catch (error) {
@@ -57,20 +62,44 @@ const start = function () {
         });
         break;
       case "Update an Employee's Role":
-            db.getNameRoleId().then(empChoices => {
-                (async function () {
-                try {
-                    const empNameId = await menu.empChoicePrompt(empChoices.empList);
-                    const newRoleId = await menu.newRolePrompt(empChoices.rolesList, empNameId.empName);
-                    await db.updateEmpRole(empNameId.id, newRoleId.roleId);
-                    await console.log(`The role of ${empNameId.empName} has been changed to ${newRoleId.roleTitle}.`)
-                    await returnSwitch();
-                }
-                catch (error) {
-                    if (error) console.log(error);
-                }
-                })();   
-            });
+        db.getNameRoleId().then((empChoices) => {
+          (async function () {
+            try {
+              const empNameId = await menu.empChoicePrompt(empChoices.empList);
+              const newRoleId = await menu.newRolePrompt(
+                empChoices.rolesList,
+                empNameId.empName
+              );
+              let valueId = await { role_id: newRoleId.roleId };
+              await db.updateEmp(empNameId.id, valueId);
+              await console.log(
+                `The role of ${empNameId.empName} has been changed to ${newRoleId.roleTitle}.`
+              );
+              await returnSwitch();
+            } catch (error) {
+              if (error) console.log(error);
+            }
+          })();
+        });
+        break;
+      case "Update an Employee's Manager":
+        db.getNamesId().then((empList) => {
+          (async function () {
+            try {
+              const empNameId = await menu.empChoicePrompt(empList);
+              const managerInfo = await menu.empMngrPrompt(empList);
+              let valueId = await { manager_id: managerInfo.mngrId };
+              await db.updateEmp(empNameId.id, valueId);
+              await console.log(
+                `${empNameId.empName} will now report to ${managerInfo.mngrName}.`
+              );
+              await returnSwitch();
+            } catch (error) {
+              if (error) console.log(error);
+            }
+          })();
+        });
+
         break;
       default:
         db.getAll(keyWord)

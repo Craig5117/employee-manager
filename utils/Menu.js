@@ -137,13 +137,16 @@ function empMngrPrompt(empList) {
       },
     ])
     .then((choice) => {
+      const mngrName = choice.mngrChoice;
       if (choice.mngrChoice === "none") {
-        return (choice.mngrChoice = null);
+        const mngrId = null;
+        return { mngrName, mngrId };
       } else {
         const match = answerKey.filter(
           (TextRow) => TextRow["name"] === choice.mngrChoice
         );
-        return match[0].id;
+        const mngrId = match[0].id;
+        return { mngrName, mngrId };
       }
     });
 }
@@ -183,8 +186,8 @@ function newRolePrompt(rolesList, name) {
       },
     ])
     .then((choice) => {
+      const roleTitle = choice.roleChoice;
       if (choice.roleChoice === "none") {
-        const roleTitle = "none";
         const roleId = null;
         return { roleTitle, roleId };
       } else {
@@ -192,8 +195,7 @@ function newRolePrompt(rolesList, name) {
           (TextRow) => TextRow["title"] === choice.roleChoice
         );
         const roleId = match[0].id;
-        const roleTitle = choice.roleChoice;
-        return { roleTitle, roleId }
+        return { roleTitle, roleId };
       }
     });
 }

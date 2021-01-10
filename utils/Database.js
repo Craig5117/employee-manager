@@ -141,15 +141,12 @@ const addEmployee = (firstName, lastName, roleId, managerId) => {
   );
 };
 
-const updateEmpRole = (empId, roleId) => {
-  console.log(`Emp ID: ${empId}`, `Role ID: ${roleId}`);
+const updateEmp = (empId, valueId) => {
   let qryStmt = `Update Employees SET ? WHERE ?`;
   return connection.promise().query(
     qryStmt,
     [
-      {
-        role_id: roleId,
-      },
+      { ...valueId },
       {
         id: empId,
       },
@@ -173,6 +170,6 @@ module.exports = {
   getRolesId,
   getNameRoleId,
   addEmployee,
-  updateEmpRole,
+  updateEmp,
   quit,
 };
