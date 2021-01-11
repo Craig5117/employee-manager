@@ -20,19 +20,25 @@ const initiateConnection = function () {
 const getAll = (keyWord) => {
   let qryStmt = `SELECT * FROM ${keyWord}`;
   if (keyWord === "Employees") {
-    qryStmt = `SELECT Employees.id, 
-                      Employees.first_name, 
-                      Employees.last_name, 
-                      Roles.title, 
-                      Departments.dept_name AS department, 
-                      Roles.salary, 
-                      CONCAT(m.first_name, ' ', m.last_name) AS manager 
-                  FROM Employees 
-                  LEFT JOIN Roles ON Employees.role_id = Roles.id 
-                  LEFT JOIN Departments ON Roles.dept_id = Departments.id
-                  LEFT JOIN Employees m ON m.id = Employees.manager_id`;
+    qryStmt = "SELECT Employees.id AS ID, " + 
+                      "Employees.first_name AS `First Name`, " + 
+                      "Employees.last_name AS `Last Name`, " + 
+                      "Roles.title AS Title, " + 
+                      "Departments.dept_name AS Department, " + 
+                      "Roles.salary AS Salary, " + 
+                      "CONCAT(m.first_name, ' ', m.last_name) AS Manager " + 
+                  "FROM Employees " +
+                  "LEFT JOIN Roles ON Employees.role_id = Roles.id " + 
+                  "LEFT JOIN Departments ON Roles.dept_id = Departments.id " +
+                  "LEFT JOIN Employees m ON m.id = Employees.manager_id";
   }
-
+  else if (keyWord === "Roles") {
+      qryStmt = "SELECT Roles.title AS Title, Roles.id AS `Role ID`, Departments.dept_name AS Department, Roles.salary AS Salary FROM Roles " +
+                    "LEFT JOIN Departments ON Roles.dept_id = Departments.id"
+  }
+  else if (keyWord === "Departments") {
+      qryStmt = "SELECT Departments.dept_name AS Department, Departments.id AS `Dept ID` FROM Departments";
+  }
   return connection
     .promise()
     .query(qryStmt)

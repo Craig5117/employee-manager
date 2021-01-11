@@ -17,6 +17,7 @@ const logo = `
 `;
 
 function mainMenu() {
+  console.clear();
   console.log(logo);
   return inquirer.prompt([
     {
