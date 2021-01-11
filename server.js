@@ -98,8 +98,8 @@ const start = function () {
               const managerInfo = await menu.empMngrPrompt(empList);
               let valueId = await { manager_id: managerInfo.mngrId };
               await db.updateEmp(empNameId.id, valueId);
-              await console.log(
-                `${empNameId.empName} will now report to ${managerInfo.mngrName}.`
+              await console.log(`
+              ${empNameId.empName} will now report to ${managerInfo.mngrName}.`
               );
               await returnSwitch();
             } catch (error) {
