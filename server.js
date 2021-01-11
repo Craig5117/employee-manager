@@ -105,6 +105,42 @@ const start = function () {
           })();
         });
         break;
+      case "Delete a Department":
+        db.getDeptsId().then((deptList) => {
+          (async function () {
+            const deptNameId = await menu.deptChoicePrompt(deptList);
+            await db.delAny(deptNameId, keyWord);
+            await console.log(`
+            ${deptNameId.deptName} has been deleted from the database.
+              `);
+            await returnSwitch();
+          })();
+        });
+        break;
+      case "Delete a Role":
+        db.getRolesId().then((rolesList) => {
+          (async function () {
+            const roleNameId = await menu.roleChoicePrompt(rolesList);
+            await db.delAny(roleNameId, keyWord);
+            await console.log(`
+              ${roleNameId.roleName} has been deleted from the database.
+                `);
+            await returnSwitch();
+          })();
+        });
+        break;
+      case "Delete an Employee":
+        db.getNamesId().then((empList) => {
+          (async function () {
+            const empNameId = await menu.empChoicePrompt(empList);
+            await db.delAny(empNameId, keyWord);
+            await console.log(`
+              ${empNameId.empName} has been deleted from the database.
+                `);
+            await returnSwitch();
+          })();
+        });
+        break;
       case "View Employees by Department":
         db.getDeptsId().then((deptList) => {
           (async function () {
@@ -114,16 +150,15 @@ const start = function () {
           })();
         });
         break;
-        case "View Employees by Manager":
-            db.getMngrNamesId().then((mngrList) => {
-                (async function () {
-                    
-                    const managerInfo = await menu.mngrChoicePrompt(mngrList);
-                    await db.getEmpByMngr(managerInfo);
-                    await returnSwitch();
-                })(); 
-            });
-            break;
+      case "View Employees by Manager":
+        db.getMngrNamesId().then((mngrList) => {
+          (async function () {
+            const managerInfo = await menu.mngrChoicePrompt(mngrList);
+            await db.getEmpByMngr(managerInfo);
+            await returnSwitch();
+          })();
+        });
+        break;
       default:
         db.getAll(keyWord)
           .then(() => returnSwitch())

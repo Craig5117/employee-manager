@@ -43,6 +43,7 @@ const getAll = (keyWord) => {
     .promise()
     .query(qryStmt)
     .then(([rows, fields]) => {
+      console.log(``);
       console.table(keyWord, rows);
     });
 };
@@ -61,6 +62,7 @@ const getEmpByDept = (deptNameId) => {
     .promise()
     .query(qryStmt)
     .then(([rows, fields]) => {
+      console.log(``);
       console.table(deptNameId.deptName, rows);
     });
 };
@@ -77,6 +79,7 @@ const getEmpByMngr = (managerInfo) => {
     .promise()
     .query(qryStmt)
     .then(([rows, fields]) => {
+      console.log(``);
       console.table(`Reporting to ${managerInfo.mngrName}`, rows);
     });
 };
@@ -217,7 +220,7 @@ const addEmployee = (firstName, lastName, roleId, managerId) => {
 };
 
 const updateEmp = (empId, valueId) => {
-  let qryStmt = `Update Employees SET ? WHERE ?`;
+  let qryStmt = `UPDATE Employees SET ? WHERE ?`;
   return connection.promise().query(
     qryStmt,
     [
@@ -226,6 +229,20 @@ const updateEmp = (empId, valueId) => {
         id: empId,
       },
     ],
+    function (err, res) {
+      if (err) throw err;
+    }
+  );
+};
+
+const delAny = (tableRowId, keyWord) => {
+  const { row, id } = tableRowId;
+  let qryStmt = `DELETE FROM ${keyWord}s WHERE ?`;
+  return connection.promise().query(
+    qryStmt,
+    {
+      id: id,
+    },
     function (err, res) {
       if (err) throw err;
     }
@@ -250,5 +267,6 @@ module.exports = {
   getMngrNamesId,
   addEmployee,
   updateEmp,
+  delAny,
   quit,
 };

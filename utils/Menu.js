@@ -35,6 +35,9 @@ function mainMenu() {
         "Add an Employee",
         "Update an Employee's Role",
         "Update an Employee's Manager",
+        "Delete a Department",
+        "Delete a Role",
+        "Delete an Employee",
         "Quit",
       ],
     },
@@ -224,6 +227,28 @@ function mngrChoicePrompt(mngrList) {
     });
 }
 
+function roleChoicePrompt(rolesList) {
+  const roleChoices = rolesList.roleTitles;
+  const answerKey = rolesList.rows;
+  return inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "roleChoice",
+        message: "Choose a role.",
+        choices: [...roleChoices],
+      },
+    ])
+    .then((choice) => {
+      const match = answerKey.filter(
+        (TextRow) => TextRow["title"] === choice.roleChoice
+      );
+      const id = match[0].id;
+      const roleName = choice.roleChoice;
+      return { roleName, id };
+    });
+}
+
 function newRolePrompt(rolesList, name) {
   const roleChoices = rolesList.roleTitles;
   const answerKey = rolesList.rows;
@@ -273,5 +298,6 @@ module.exports = {
   deptChoicePrompt,
   newRolePrompt,
   mngrChoicePrompt,
+  roleChoicePrompt,
   quitReturn,
 };
