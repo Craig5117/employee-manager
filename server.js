@@ -106,12 +106,13 @@ const start = function () {
         });
         break;
       case "View Employees by Department":
-        db.getEmpByDept()
-          .then(() => returnSwitch())
-          .catch(function (e) {
-            console.error(e.message);
-            returnSwitch();
-          });
+        db.getDeptsId().then((deptList) => {
+          (async function () {
+            const deptNameId = await menu.deptChoicePrompt(deptList);
+            await db.getEmpByDept(deptNameId);
+            await returnSwitch();
+          })();
+        });
         break;
       default:
         db.getAll(keyWord)

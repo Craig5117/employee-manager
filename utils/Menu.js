@@ -29,6 +29,7 @@ function mainMenu() {
         "View All Roles",
         "View All Employees",
         "View Employees by Department",
+        "View Employees by Manager",
         "Add a Department",
         "Add a Role",
         "Add an Employee",
@@ -165,7 +166,7 @@ function empChoicePrompt(empList) {
       {
         type: "list",
         name: "empChoice",
-        message: "Choose an Employee?",
+        message: "Choose an Employee.",
         choices: [...empChoices],
       },
     ])
@@ -176,6 +177,28 @@ function empChoicePrompt(empList) {
       const id = match[0].id;
       const empName = choice.empChoice;
       return { empName, id };
+    });
+}
+
+function deptChoicePrompt(deptList) {
+  const deptChoices = deptList.deptNames;
+  const answerKey = deptList.rows;
+  return inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "deptChoice",
+        message: "Choose a department.",
+        choices: [...deptChoices],
+      },
+    ])
+    .then((choice) => {
+      const match = answerKey.filter(
+        (TextRow) => TextRow["dept_name"] === choice.deptChoice
+      );
+      const id = match[0].id;
+      const deptName = choice.deptChoice;
+      return { deptName, id };
     });
 }
 
@@ -225,6 +248,7 @@ module.exports = {
   empRolePrompt,
   empMngrPrompt,
   empChoicePrompt,
+  deptChoicePrompt,
   newRolePrompt,
   quitReturn,
 };

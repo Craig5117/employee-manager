@@ -47,20 +47,21 @@ const getAll = (keyWord) => {
     });
 };
 
-const getEmpByDept = () => {
+const getEmpByDept = (deptNameId) => {
   let qryStmt = `SELECT 
-                        Departments.dept_name AS Departments, 
-                        Roles.title AS Roles, 
+                         
+                         
                         CONCAT(Employees.first_name, ' ', Employees.last_name) AS Employees, 
+                        Roles.title AS Roles,
                         Roles.salary AS Salary 
-                    FROM Departments 
-                    LEFT JOIN Roles ON Roles.dept_id = Departments.id
-                    LEFT JOIN Employees ON Employees.role_id = Roles.id`;
+                    FROM Roles 
+                    INNER JOIN Employees ON Employees.role_id = Roles.id
+                    and Roles.dept_id = ${deptNameId.id}`;
   return connection
     .promise()
     .query(qryStmt)
     .then(([rows, fields]) => {
-      console.table("Employees by Department", rows);
+      console.table(deptNameId.deptName, rows);
     });
 };
 
@@ -117,7 +118,7 @@ const getRolesId = () => {
   let qryStmt = `SELECT 
                         title, 
                         id 
-                    FROM roles`;
+                    FROM Roles`;
 
   return connection
     .promise()
@@ -127,6 +128,23 @@ const getRolesId = () => {
         roleTitles = [...roleTitles, rows[i].title];
       }
       return (rolesList = { roleTitles, rows });
+    });
+};
+
+const getDeptsId = () => {
+  let deptNames = [];
+  let qryStmt = `SELECT
+                        dept_name,
+                        id
+                    FROM Departments`;
+  return connection
+    .promise()
+    .query(qryStmt)
+    .then(([rows, fields]) => {
+      for (let i = 0; i < rows.length; ++i) {
+        deptNames = [...deptNames, rows[i].dept_name];
+      }
+      return (deptList = { deptNames, rows });
     });
 };
 
@@ -192,6 +210,7 @@ module.exports = {
   addRole,
   getNamesId,
   getRolesId,
+  getDeptsId,
   getNameRoleId,
   addEmployee,
   updateEmp,
