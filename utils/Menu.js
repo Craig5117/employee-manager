@@ -202,6 +202,28 @@ function deptChoicePrompt(deptList) {
     });
 }
 
+function mngrChoicePrompt(mngrList) {
+  const mngrChoices = mngrList.mngrNames;
+  const answerKey = mngrList.rows;
+  return inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "mngrChoice",
+        message: "Choose a manager.",
+        choices: [...mngrChoices],
+      },
+    ])
+    .then((choice) => {
+      const match = answerKey.filter(
+        (TextRow) => TextRow["managers"] === choice.mngrChoice
+      );
+      const id = match[0].id;
+      const mngrName = choice.mngrChoice;
+      return { mngrName, id };
+    });
+}
+
 function newRolePrompt(rolesList, name) {
   const roleChoices = rolesList.roleTitles;
   const answerKey = rolesList.rows;
@@ -250,5 +272,6 @@ module.exports = {
   empChoicePrompt,
   deptChoicePrompt,
   newRolePrompt,
+  mngrChoicePrompt,
   quitReturn,
 };

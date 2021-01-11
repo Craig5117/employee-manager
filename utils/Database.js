@@ -65,6 +65,22 @@ const getEmpByDept = (deptNameId) => {
     });
 };
 
+const getEmpByMngr = (managerInfo) => {
+  let qryStmt = `SELECT        
+        CONCAT(Employees.first_name, ' ', Employees.last_name) AS Employees, 
+        Roles.title AS Roles,
+        Roles.salary AS Salary 
+    FROM Employees 
+    INNER JOIN Roles ON Employees.role_id = Roles.id
+    WHERE Employees.manager_id = ${managerInfo.id}`;
+  return connection
+    .promise()
+    .query(qryStmt)
+    .then(([rows, fields]) => {
+      console.table(`Reporting to ${managerInfo.mngrName}`, rows);
+    });
+};
+
 const addDept = (deptName) => {
   let qryStmt = `INSERT INTO Departments SET ?`;
 
@@ -148,6 +164,24 @@ const getDeptsId = () => {
     });
 };
 
+const getMngrNamesId = () => {
+  let mngrNames = [];
+  let qryStmt = `SELECT DISTINCT 
+                        CONCAT(m.first_name, ' ', m.last_name) AS managers, 
+                        m.id 
+                    FROM Employees 
+                    INNER JOIN Employees m ON m.id = Employees.manager_id`;
+  return connection
+    .promise()
+    .query(qryStmt)
+    .then(([rows, fields]) => {
+      for (let i = 0; i < rows.length; ++i) {
+        mngrNames = [...mngrNames, rows[i].managers];
+      }
+      return (mngrList = { mngrNames, rows });
+    });
+};
+
 async function getNameRoleId() {
   try {
     const empList = await getNamesId();
@@ -206,12 +240,14 @@ module.exports = {
   initiateConnection,
   getAll,
   getEmpByDept,
+  getEmpByMngr,
   addDept,
   addRole,
   getNamesId,
   getRolesId,
   getDeptsId,
   getNameRoleId,
+  getMngrNamesId,
   addEmployee,
   updateEmp,
   quit,

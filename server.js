@@ -114,6 +114,16 @@ const start = function () {
           })();
         });
         break;
+        case "View Employees by Manager":
+            db.getMngrNamesId().then((mngrList) => {
+                (async function () {
+                    
+                    const managerInfo = await menu.mngrChoicePrompt(mngrList);
+                    await db.getEmpByMngr(managerInfo);
+                    await returnSwitch();
+                })(); 
+            });
+            break;
       default:
         db.getAll(keyWord)
           .then(() => returnSwitch())
