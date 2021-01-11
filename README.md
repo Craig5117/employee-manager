@@ -1,4 +1,7 @@
 # Employee Manager
+
+The App
+![Screenshot of Employee Manager running in the command line.](./screenshots/screenshot-1.jpg)
 ## Description 
 
 Employee Manager is a command line app that interacts with a MySQL database to so that you can easily keep track your company's departments, roles, and employees.
@@ -36,6 +39,8 @@ To install Employee Manager, you will first need to download or clone the conten
 ---
 
 ## Usage
+
+[Video Tutorial](https://drive.google.com/file/d/13UkLrgf3CfAjvipaZ2PQmYJ3rc755--b/view)
 
 To use the app, you will have to configure the connection settings for the mysql2 package. To do that, in ./utils/Database.js, change the values for user and password for the `const connection`. You can use "root" for the default MySQL username and your password for password. Or you could create a new user through MySQL in the command terminal and use those values. 
 
