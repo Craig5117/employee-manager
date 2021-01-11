@@ -28,6 +28,7 @@ function mainMenu() {
         "View All Departments",
         "View All Roles",
         "View All Employees",
+        "View Employees by Department",
         "Add a Department",
         "Add a Role",
         "Add an Employee",

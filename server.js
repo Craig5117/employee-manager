@@ -19,8 +19,7 @@ const start = function () {
             .then((res) => {
               console.log(`
               ${res[0].affectedRows} department added!
-              `
-              );
+              `);
               returnSwitch();
             })
             .catch(function (e) {
@@ -81,8 +80,7 @@ const start = function () {
               await db.updateEmp(empNameId.id, valueId);
               await console.log(`
               The role of ${empNameId.empName} has been changed to ${newRoleId.roleTitle}.
-              `
-              );
+              `);
               await returnSwitch();
             } catch (error) {
               if (error) console.log(error);
@@ -99,15 +97,21 @@ const start = function () {
               let valueId = await { manager_id: managerInfo.mngrId };
               await db.updateEmp(empNameId.id, valueId);
               await console.log(`
-              ${empNameId.empName} will now report to ${managerInfo.mngrName}.`
-              );
+              ${empNameId.empName} will now report to ${managerInfo.mngrName}.`);
               await returnSwitch();
             } catch (error) {
               if (error) console.log(error);
             }
           })();
         });
-
+        break;
+      case "View Employees by Department":
+        db.getEmpByDept()
+          .then(() => returnSwitch())
+          .catch(function (e) {
+            console.error(e.message);
+            returnSwitch();
+          });
         break;
       default:
         db.getAll(keyWord)
