@@ -49,7 +49,9 @@ function deptPrompt() {
         if (deptName) {
           return true;
         } else {
-          console.log(`\n***** You must enter a department name. *****`);
+          console.log(`
+          ***** You must enter a department name. *****
+          `);
           return false;
         }
       },
@@ -67,7 +69,9 @@ function rolePrompt() {
         if (roleTitle) {
           return true;
         } else {
-          console.log(`\n***** You must enter a role name. *****`);
+          console.log(`
+          ***** You must enter a role name. *****
+          `);
           return false;
         }
       },

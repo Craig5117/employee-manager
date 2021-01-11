@@ -17,7 +17,10 @@ const start = function () {
         menu.deptPrompt().then((input) => {
           db.addDept(input.deptName)
             .then((res) => {
-              console.log(res[0].affectedRows + " department added!\n");
+              console.log(`
+              ${res[0].affectedRows} department added!
+              `
+              );
               returnSwitch();
             })
             .catch(function (e) {
@@ -30,7 +33,9 @@ const start = function () {
         menu.rolePrompt().then((input) => {
           db.addRole(input.roleTitle, input.roleSalary, input.roleDept)
             .then((res) => {
-              console.log(res[0].affectedRows + " role added!\n");
+              console.log(`
+              ${res[0].affectedRows} role added!
+              `);
               returnSwitch();
             })
             .catch(function (e) {
@@ -53,7 +58,9 @@ const start = function () {
                 roleId,
                 managerInfo.mngrId
               );
-              await console.log("Employee added.");
+              await console.log(`
+              Employee added.
+              `);
               await returnSwitch();
             } catch (error) {
               if (error) console.log(error);
@@ -72,8 +79,9 @@ const start = function () {
               );
               let valueId = await { role_id: newRoleId.roleId };
               await db.updateEmp(empNameId.id, valueId);
-              await console.log(
-                `The role of ${empNameId.empName} has been changed to ${newRoleId.roleTitle}.`
+              await console.log(`
+              The role of ${empNameId.empName} has been changed to ${newRoleId.roleTitle}.
+              `
               );
               await returnSwitch();
             } catch (error) {

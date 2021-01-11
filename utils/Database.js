@@ -13,7 +13,6 @@ const connection = mysql.createConnection({
 const initiateConnection = function () {
   connection.promise().connect((err) => {
     if (err) throw err;
-    console.log("connected as id " + connection.threadId + "\n");
   });
 };
 
