@@ -159,6 +159,21 @@ const start = function () {
           })();
         });
         break;
+      case "View Total Salary Expenses per Department":
+        db.getDeptsId().then((deptList) => {
+            (async function () {
+                let deptNameId = "";
+                let viewNumber = await menu.deptViewNumPrompt();
+                if (viewNumber.choice === "One") {
+                    deptNameId = await menu.deptChoicePrompt(deptList);
+                }; 
+              await db.getDeptBdgt(deptNameId);
+              await returnSwitch();
+            })();
+          });
+          
+
+        break;
       default:
         db.getAll(keyWord)
           .then(() => returnSwitch())

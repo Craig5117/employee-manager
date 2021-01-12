@@ -49,12 +49,10 @@ const getAll = (keyWord) => {
 };
 
 const getEmpByDept = (deptNameId) => {
-  let qryStmt = `SELECT 
-                         
-                         
+  let qryStmt = `SELECT                          
                         CONCAT(Employees.first_name, ' ', Employees.last_name) AS Employees, 
                         Roles.title AS Roles,
-                        Roles.salary AS Salary 
+                        Roles.salary AS Salary,
                     FROM Roles 
                     INNER JOIN Employees ON Employees.role_id = Roles.id
                     and Roles.dept_id = ${deptNameId.id}`;
@@ -81,6 +79,29 @@ const getEmpByMngr = (managerInfo) => {
     .then(([rows, fields]) => {
       console.log(``);
       console.table(`Reporting to ${managerInfo.mngrName}`, rows);
+    });
+};
+
+const getDeptBdgt = (deptNameId) => {
+    let singleOpt = "";
+    if (deptNameId) {
+        singleOpt = `WHERE Roles.dept_id = ${deptNameId.id} `;
+    }
+
+  let qryStmt =
+    "SELECT " +
+    "Departments.dept_name AS Department, " +
+    "SUM(Roles.salary) AS `Total Salary Expenses` " +
+    "FROM Departments " +
+    "LEFT JOIN Roles ON Departments.id = Roles.dept_id " +
+     singleOpt +
+    "GROUP BY Roles.dept_id";
+  return connection
+    .promise()
+    .query(qryStmt)
+    .then(([rows, fields]) => {
+      console.log(``);
+      console.table("Department Salary Expenses", rows)
     });
 };
 
@@ -258,6 +279,7 @@ module.exports = {
   getAll,
   getEmpByDept,
   getEmpByMngr,
+  getDeptBdgt,  
   addDept,
   addRole,
   getNamesId,

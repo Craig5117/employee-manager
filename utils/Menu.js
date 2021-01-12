@@ -30,6 +30,7 @@ function mainMenu() {
         "View All Employees",
         "View Employees by Department",
         "View Employees by Manager",
+        "View Total Salary Expenses per Department",
         "Add a Department",
         "Add a Role",
         "Add an Employee",
@@ -276,6 +277,17 @@ function newRolePrompt(rolesList, name) {
     });
 }
 
+function deptViewNumPrompt() {
+  return inquirer.prompt([
+    {
+      type: "list",
+      name: "choice",
+      message: "Would you like to view expenses for all departments or just one?",
+      choices: ["One", "All"],
+    },
+  ]);
+}
+
 function quitReturn() {
   return inquirer.prompt([
     {
@@ -299,5 +311,6 @@ module.exports = {
   newRolePrompt,
   mngrChoicePrompt,
   roleChoicePrompt,
+  deptViewNumPrompt,
   quitReturn,
 };
