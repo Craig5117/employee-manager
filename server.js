@@ -1,6 +1,5 @@
 const dotenv = require("dotenv").config();
 const cTable = require("console.table");
-const inquirer = require("inquirer");
 const mysql = require("mysql2");
 const db = require("./utils/Database");
 const menu = require("./utils/Menu");
@@ -161,17 +160,16 @@ const start = function () {
         break;
       case "View Total Salary Expenses per Department":
         db.getDeptsId().then((deptList) => {
-            (async function () {
-                let deptNameId = "";
-                let viewNumber = await menu.deptViewNumPrompt();
-                if (viewNumber.choice === "One") {
-                    deptNameId = await menu.deptChoicePrompt(deptList);
-                }; 
-              await db.getDeptBdgt(deptNameId);
-              await returnSwitch();
-            })();
-          });
-          
+          (async function () {
+            let deptNameId = "";
+            let viewNumber = await menu.deptViewNumPrompt();
+            if (viewNumber.choice === "One") {
+              deptNameId = await menu.deptChoicePrompt(deptList);
+            }
+            await db.getDeptBdgt(deptNameId);
+            await returnSwitch();
+          })();
+        });
 
         break;
       default:
